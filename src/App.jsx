@@ -4,7 +4,7 @@ import Navbar from "./components/ui/Navbar.jsx";
 import Home from "../pages/Home.jsx";
 import Signup from "../pages/Signup.jsx";
 import Login from "../pages/Login.jsx";
-import Verify from "../pages/verify.jsx";
+import Verify from "../pages/Verify.jsx";
 import Cart from "../pages/Cart.jsx";
 import Profile from "../pages/Profile.jsx";
 import Products from "../pages/Products.jsx";
