@@ -1,5 +1,6 @@
 import React from "react";
-import Hero from "./hero.jsx";
+
+import Hero from "./Hero.jsx";
 import Features from "../src/components/ui/features.jsx";
 import Footer from "../src/components/footer.jsx";
 
