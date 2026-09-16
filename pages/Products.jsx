@@ -8,7 +8,7 @@ import { Card, CardContent } from "../src/components/ui/card.jsx";
 import { Button } from "../src/components/ui/button.jsx";
 import { Input } from "../src/components/ui/input.jsx";
 import { Link } from "react-router-dom";
-import { Search, Filter, Star, ShoppingCart, Grid, List } from "lucide-react";
+import { Search, Filter, Star, ShoppingCart, Grid, List, X, SlidersHorizontal } from "lucide-react";
 
 
 function Products() {
@@ -27,7 +27,7 @@ function Products() {
   });
   const [categories, setCategories] = useState([]);
   const [brands, setBrands] = useState([]);
-  const [showFilters, setShowFilters] = useState(true);
+  const [showFilters, setShowFilters] = useState(false);
   const [viewMode, setViewMode] = useState("grid");
 
   useEffect(() => {
@@ -53,7 +53,9 @@ function Products() {
       params.append("page", pagination.page);
       params.append("limit", 12);
 
-const response = await axios.get(`https://ecommerce-backened.vercel.app/api/v1/products?${params.toString()}`);
+      const response = await axios.get(
+        `http://localhost:8000/api/v1/products?${params.toString()}`
+      );
 
       if (response.data.success) {
         setProducts(response.data.products);
@@ -82,7 +84,7 @@ const response = await axios.get(`https://ecommerce-backened.vercel.app/api/v1/p
 
   const fetchCategories = async () => {
     try {
-const response = await axios.get("https://ecommerce-backened.vercel.app/api/v1/products/categories");
+      const response = await axios.get("http://localhost:8000/api/v1/products/categories");
       if (response.data.success) {
         setCategories(response.data.categories);
       }
@@ -216,10 +218,9 @@ const response = await axios.get("https://ecommerce-backened.vercel.app/api/v1/p
 
   return (
     <>
-      <Navbar />
       <Toaster position="top-center" richColors />
       <div className="pt-16 min-h-screen bg-gradient-to-b from-slate-50 via-pink-50 to-purple-50">
-        <div className="backdrop-blur-xl bg-white/95 shadow-2xl border-b border-white/30 sticky top-16 z-40">
+        <div className="backdrop-blur-xl bg-white/95 shadow-md border-b border-gray-200/50 relative">
           <div className="container mx-auto px-4 py-4">
             <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
               <div>
@@ -245,10 +246,14 @@ const response = await axios.get("https://ecommerce-backened.vercel.app/api/v1/p
                 
                 <Button
                   onClick={() => setShowFilters(!showFilters)}
-                  className="h-14 px-6 backdrop-blur-xl bg-white/80 hover:bg-white shadow-2xl hover:shadow-4xl border border-pink-200/50 text-pink-700 hover:text-pink-900 font-bold rounded-3xl transition-all duration-300 flex items-center gap-2 shadow-lg whitespace-nowrap"
+                  className={`h-14 px-6 backdrop-blur-xl border rounded-3xl transition-all duration-300 flex items-center gap-2 shadow-md cursor-pointer whitespace-nowrap ${
+                    showFilters
+                      ? "bg-pink-600 hover:bg-pink-700 text-white border-pink-600 shadow-pink-500/25"
+                      : "bg-white/90 hover:bg-white text-gray-800 border-pink-200/60 hover:border-pink-300"
+                  }`}
                 >
                   <Filter className="w-5 h-5" />
-                  Filters
+                  <span>{showFilters ? "Hide Filters" : "Filters"}</span>
                   {hasActiveFilters && (
                     <span className="bg-gradient-to-r from-pink-500 to-purple-500 text-white rounded-full w-6 h-6 flex items-center justify-center text-xs font-black shadow-lg animate-pulse">
                       {Object.values(filters).filter(Boolean).length}
@@ -282,24 +287,38 @@ const response = await axios.get("https://ecommerce-backened.vercel.app/api/v1/p
         <div className="container mx-auto px-4 py-6 lg:py-8">
           <div className={`lg:flex lg:gap-6 ${showFilters ? '' : 'justify-center'}`}>
             {showFilters && (
-              <aside className="w-full lg:w-80 xl:w-96 flex-shrink-0 mb-8 lg:mb-0 lg:sticky lg:top-48 lg:max-h-[calc(100vh-14rem)] lg:overflow-y-auto scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-gray-100">
+              <aside className="w-full lg:w-80 xl:w-96 flex-shrink-0 mb-8 lg:mb-0 lg:sticky lg:top-24 lg:max-h-[calc(100vh-8rem)] lg:overflow-y-auto scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-gray-100 animate-in fade-in slide-in-from-top-4 duration-300">
                 <Card className="bg-white/95 backdrop-blur-xl shadow-2xl border border-white/50 hover:shadow-3xl transition-all duration-500 rounded-3xl overflow-hidden">
                   <CardContent className="p-0">
                     <div className="bg-gradient-to-r from-pink-50/80 to-purple-50/80 p-5 border-b border-white/30">
                       <div className="flex items-center justify-between mb-1">
-                        <h2 className="text-xl font-bold bg-gradient-to-r from-gray-900 to-pink-600 bg-clip-text text-transparent drop-shadow-lg">
-                          Advanced Filters
-                        </h2>
-                        {hasActiveFilters && (
+                        <div className="flex items-center gap-2">
+                          <SlidersHorizontal className="w-5 h-5 text-pink-600" />
+                          <h2 className="text-xl font-bold bg-gradient-to-r from-gray-900 to-pink-600 bg-clip-text text-transparent drop-shadow-lg">
+                            Advanced Filters
+                          </h2>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          {hasActiveFilters && (
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              onClick={clearFilters}
+                              className="bg-gradient-to-r from-pink-400/80 to-purple-400/80 hover:from-pink-500 hover:to-purple-500 text-white font-semibold backdrop-blur shadow-md px-3 py-1 rounded-xl text-xs transition-all cursor-pointer"
+                            >
+                              Clear ({Object.values(filters).filter(Boolean).length})
+                            </Button>
+                          )}
                           <Button
                             variant="ghost"
-                            size="sm"
-                            onClick={clearFilters}
-                            className="bg-gradient-to-r from-pink-400/80 to-purple-400/80 hover:from-pink-500 hover:to-purple-500 text-white font-semibold backdrop-blur shadow-xl hover:shadow-2xl px-4 py-1.5 rounded-2xl text-xs transition-all"
+                            size="icon"
+                            onClick={() => setShowFilters(false)}
+                            className="w-8 h-8 rounded-full hover:bg-gray-200/60 text-gray-500 hover:text-gray-800 transition-colors cursor-pointer"
+                            title="Close Filters"
                           >
-                            Clear ({Object.values(filters).filter(Boolean).length})
+                            <X className="w-4 h-4" />
                           </Button>
-                        )}
+                        </div>
                       </div>
                       <p className="text-xs text-gray-600 font-medium opacity-90">Refine your perfect match</p>
                     </div>
